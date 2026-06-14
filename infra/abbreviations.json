@@ -1,0 +1,18 @@
+{
+  "apiManagementService": "apim-",
+  "appManagedEnvironments": "cae-",
+  "appContainerApps": "ca-",
+  "cognitiveServicesAccounts": "cs-",
+  "documentDBDatabaseAccounts": "cosmos-",
+  "insightsComponents": "appi-",
+  "keyVaultVaults": "kv-",
+  "machineLearningWorkspaces": "mlw-",
+  "operationalInsightsWorkspaces": "log-",
+  "searchSearchServices": "srch-",
+  "serviceBusNamespaces": "sb-",
+  "storageStorageAccounts": "st",
+  "staticSites": "stapp-",
+  "containerRegistries": "acr",
+  "managedClusters": "aks-",
+  "mlWorkspaces": "aml-"
+}

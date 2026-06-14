@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: diagnostic-engine
+  namespace: cognitops
+  labels:
+    app: diagnostic-engine
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: diagnostic-engine
+  template:
+    metadata:
+      labels:
+        app: diagnostic-engine
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: cognitops-workload-sa
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: cognitops-kv-secrets
+      containers:
+        - name: diagnostic-engine
+          image: __ACR_LOGIN_SERVER__/cognitops/diagnostic-engine:latest
+          ports:
+            - containerPort: 8002
+          envFrom:
+            - configMapRef:
+                name: cognitops-config
+            - secretRef:
+                name: cognitops-secrets
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets
+              readOnly: true
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8002
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8002
+            initialDelaySeconds: 30
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: diagnostic-engine
+  namespace: cognitops
+spec:
+  selector:
+    app: diagnostic-engine
+  ports:
+    - port: 8002
+      targetPort: 8002
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: diagnostic-engine-hpa
+  namespace: cognitops
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: diagnostic-engine
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

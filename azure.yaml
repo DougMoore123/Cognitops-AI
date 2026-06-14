@@ -1,0 +1,40 @@
+# CognitOps AI - Azure Developer CLI Configuration
+name: cognitops-ai
+metadata:
+  template: cognitops-ai@0.0.1
+
+services:
+  orchestrator:
+    project: src/orchestrator
+    language: py
+    host: containerapp
+
+  rag-service:
+    project: src/rag-service
+    language: py
+    host: containerapp
+
+  diagnostic-engine:
+    project: src/diagnostic-engine
+    language: py
+    host: containerapp
+
+  severity-scorer:
+    project: src/severity-scorer
+    language: py
+    host: containerapp
+
+  report-generator:
+    project: src/report-generator
+    language: py
+    host: containerapp
+
+  supervisor-api:
+    project: src/supervisor-api
+    language: py
+    host: containerapp
+
+  frontend:
+    project: src/frontend
+    language: js
+    host: staticwebapp
